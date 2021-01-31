@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>SQLite3 게시판 등록</title>
+
+  <style type="text/css">
+	body{ text-align: center; }
+  </style>
+ </head>
+ <body>
+	<h3>게시판</h3>
+	<h4>추가</h4>
+	<form action = "/add" method = "POST">
+		이름<br>
+		<input type = "text" name = "name" /><br>
+		내용<br>
+		<input type = "text" name = "context" style="text-align:center; width:400px; height:100px;"/><br><br>
+		<input type = "submit" value = "게 시" /><br>
+	</form>
+	<h4>목록보기</h4>
+	<table border=1 width="600" align="center">
+		<thead>
+        <td>목차</td>
+		<td>이름</td>
+		<td>내용</td>
+		<td>생성시간</td>
+        <td>수정, 삭제</td>
+		</thead>
+	{% for row in rows %}
+		<tr>
+            <td>{{ loop.index }}</td>
+			<td>{{ row['name'] }}</td>
+			<td>{{ row['content'] }}</td>
+            <td>{{ row['create_date'] }}</td>
+            <td><a href ="{{url_for('update', uid = loop.index)}}">수정</a> <a href ="{{url_for('delete', uid = loop.index)}}">삭제</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+ </body>
+</html>
