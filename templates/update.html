@@ -6,7 +6,7 @@
   <meta name="Author" content="">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-  <title>SQLite3 게시판 등록</title>
+  <title>게시판 수정</title>
 
   <style type="text/css">
 	body{ text-align: center; }
@@ -19,7 +19,7 @@
 		이름<br>
 		<input type = "text" name = "name" /><br>
 		내용<br>
-		<input type = "text" name = "context" style="text-align:center; width:400px; height:100px;"/><br><br>
+		<input type = "text" name = "content" style="text-align:center; width:400px; height:100px;"/><br><br>
 		<input type = "submit" value = "수 정" /><br>
 	</form>
 	<h4>기존</h4>
@@ -32,9 +32,9 @@
 		</thead>
 		<tr>
             <td>{{ index }}</td>
-			<td>{{ rows['name'] }}</td>
-			<td>{{ rows['content'] }}</td>
-			<td>{{ rows['create_date'] }}</td>
+			<td>{{ row['name'] }}</td>
+			<td>{{ row['content'] }}</td>
+			<td>{{ row['create_date'] }}</td>
 		</tr>
 	</table>
  </body>

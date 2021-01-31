@@ -6,7 +6,7 @@
   <meta name="Author" content="">
   <meta name="Keywords" content="">
   <meta name="Description" content="">
-  <title>게시판 홈</title>
+  <title>게시판 추가</title>
 
   <style type="text/css">
 	body{ text-align: center; }
@@ -15,6 +15,14 @@
  <body>
 	<h3>게시판</h3>
 	<h4><a href="{{url_for('add')}}">추가</a>    <a href="{{url_for('search')}}">검색</a><br><br>목록</h4> 
+	<form action = "/add" method = "POST">
+		이름<br>
+		<input type = "text" name = "name" /><br>
+		내용<br>
+		<input type = "text" name = "content" style="text-align:center; width:400px; height:100px;"/><br><br>
+		<input type = "submit" value = "게 시" /><br>
+	</form>
+	<h4>목록</h4>
 	<table border=1 width="600" align="center">
 		<thead>
         <td>목차</td>
