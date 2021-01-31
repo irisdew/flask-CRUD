@@ -12,6 +12,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+app.config.from_mapping(SECRET_KEY='dev')
+
 @app.route('/')
 def home():
     if session.get('logged_in'):
@@ -24,33 +26,45 @@ def home():
 @app.route('/login', methods = ['GET', 'POST'])  
 def login():  
     if request.method == 'POST':
-        id = request.form['id']  
-        password = request.form['pwd'] 
-        try:
-            if (id in userinfo):
-                if userinfo[id] == password:
-                    session['logged_in'] = True
-                    return render_template('loggedin.html')
-                else:
-                    return '비밀번호가 틀립니다.'
-            return '아이디가 없습니다.'
-        except:
-            return "Don't login"
+        email = request.form['email']  
+        password = request.form['password']
+        db_class = dbModule.Database()
+        sql = f"SELECT * FROM user WHERE email='{email}'"
+        row = db_class.executeOne(sql)
+        print(row)
+        if row is not None:
+            if check_password_hash(row['password'], password):
+                session['logged_in'] = True
+                return render_template('loggedin.html')
+            else:
+                return '비밀번호가 틀립니다.'
+        else: 
+            return '아이디가 없습니다'
+        
     else:
         return render_template('login.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        userinfo[request.form['username']] = request.form['password']
-        print(userinfo)
+        fullname = request.form['fullname']
+        email = request.form['email']
+        hashed_password = generate_password_hash(request.form['password'])
+        db_class = dbModule.Database()
+        sql = f"INSERT INTO user (fullname, email,  password) VALUES ('{fullname}', '{email}', '{hashed_password}')"
+        db_class.execute(sql)
+        db_class.commit()
         return redirect(url_for('login'))
     else:
         return render_template('register.html')
+
 
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
     return render_template('index.html')
+
+
+if __name__ == '__main__':
+    app.run()
