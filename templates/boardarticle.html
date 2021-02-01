@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>게시판 홈</title>
+
+  <style type="text/css">
+	body{ text-align: center; }
+  </style>
+ </head>
+ <body>
+	<h3><{{ board_name }}>의 게시글</h3>
+	<table border=1 width="600" align="center">
+		<thead>
+        <td>글번호</td>
+		<td>제목</td>
+		<td>내용</td>
+		</thead>
+	{% for row in result %}
+		<tr>
+			<td>{{ row['id'] }}</td>
+			<td>{{ row['title'] }}</td>
+            <td>{{ row['content'] }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+ </body>
+</html>

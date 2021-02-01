@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>게시글 추가</title>
+
+  <style type="text/css">
+	body{ text-align: center; }
+  </style>
+ </head>
+ <body>
+	<h3>게시글 추가</h3>
+
+	<form action = '/board/{{board_id}}/{{board_article_id}}/update' method = "POST">
+		제목<br>
+		<input type = "text" name = "title" /><br>
+		내용<br>
+		<input type = "text" name = "content" style="text-align:center; width:400px; height:100px;"/><br><br>
+        게시판 번호<br>
+		<input type = "text" name = "board_id" /><br>
+        <input type = "submit" value = "수 정" /><br>
+	</form>
+ 
+</body>
+</html>
