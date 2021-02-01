@@ -280,3 +280,4 @@ SQL문을 "SELECT * FROM boardarticle GROUP BY board_id ORDER BY create_date DES
 - css, bootstrap을 적용해보고 싶습니다.
 - ORM(SQLAlchemy)을 이번에는 사용하지 않았는데 ORM으로 API를 만들어볼 것입니다.
 - form대신 ajax나 다른 방법으로 데이터를 주고받도록 만들어보고 싶습니다. 
+- 현재는 http://localhost:5000 에서만 실행됩니다. 다음에는 배포까지 해보고 싶습니다!
