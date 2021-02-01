@@ -1,3 +1,12 @@
+create table if not exists user(
+    id int not null AUTO_INCREMENT,
+    fullname varchar(32) not null,
+    email varchar(64) not null,
+    password varchar(128) not null,
+    primary key(id),
+    unique(email)
+);
+
 create table if not exists board(
     id int not null AUTO_INCREMENT,
     name varchar(64) not null,
@@ -15,18 +24,3 @@ create table if not exists boardArticle(
     primary key (id),
     foreign key (board_id) references board(id)
 );
-
-create table if not exists user(
-    id int not null AUTO_INCREMENT,
-    fullname varchar(32) not null,
-    email varchar(64) not null,
-    password varchar(128) not null,
-    primary key(id),
-    unique(email)
-);
-
-
-INSERT INTO board (name) VALUES ('test1');
-INSERT INTO boardArticle (title, content, board_id) VALUES ('제목1', '내용1', 1);
-INSERT INTO boardArticle (title, content, board_id) VALUES ('제목2', '내용2', 1);
-INSERT INTO boardArticle (title, content, board_id) VALUES ('제목3', '내용3', 1);
