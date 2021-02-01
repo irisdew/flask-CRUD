@@ -50,6 +50,9 @@ flask로 api를 만들고 render_template으로 페이지를 출력하여 결과
 `(reference) elice 5주차 실습 파일`
 
 ### app.py
+모든 API가 모여 있는 최종 과제 제출 py파일입니다.
+
+_user.py / _board.py / _boadarticle.py / _dashboard.py 를 합친 파일입니다.
 ```
 import dbModule
 from flask import Flask, jsonify, redirect, url_for, render_template, request, session
@@ -265,10 +268,15 @@ def dashboard():
 if __name__ == '__main__':
     app.run()
 ```
+4.Dashboard API는 완벽하게 만들지 못했습니다. <br>
+SQL문을 "SELECT * FROM boardarticle GROUP BY board_id ORDER BY create_date DESC"으로 하면 <br>
+그룹별(board별)로 가장 최신의 글 1개씩 밖에 불러오지 못합니다. <br>
+분명 다른 방법이 있겠지만... <br>
+일단 각 게시판별로 최신의 글 1개씩만을 불러오는 형태로 만들었습니다. <br>
 
 ### 아쉬운 점 / 다음에 보완할 점
-- flask_resful 등을 활용해서 restful하게 API를 설계해보고 싶다.
-- 웹페이지간의 연결성이 있게 페이지를 설계해보고 싶다.
-- css, bootstrap을 적용해보고 싶다.
-- ORM(SQLAlchemy)을 이번에는 사용하지 않았는데 ORM으로 API를 만들어볼 것이다.
-- form대신 ajax나 다른 방법으로 데이터를 주고받도록 만들어보고 싶다. 
+- flask_resful 등을 활용해서 restful하게 API를 설계해보고 싶습니다.
+- 웹페이지간의 연결성이 있게 페이지를 설계해보고 싶습니다.
+- css, bootstrap을 적용해보고 싶습니다.
+- ORM(SQLAlchemy)을 이번에는 사용하지 않았는데 ORM으로 API를 만들어볼 것입니다.
+- form대신 ajax나 다른 방법으로 데이터를 주고받도록 만들어보고 싶습니다. 
