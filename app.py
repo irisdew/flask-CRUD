@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config.from_mapping(SECRET_KEY='dev')
 
 """
-1. User APIs : 유저 SignUp / Login / Logout
+1. User APIs 
 """
 
 @app.route('/')
@@ -16,7 +16,6 @@ def home():
         return render_template('loggedin.html')
     else:
         return render_template('index.html')
-
 
 @app.route('/login', methods = ['GET', 'POST'])  
 def login():  
@@ -34,7 +33,7 @@ def login():
             else:
                 return '비밀번호가 틀립니다.'
         else: 
-            return '아이디가 없습니다'       
+            return '아이디가 없습니다'        
     else:
         return render_template('login.html')
 
@@ -60,7 +59,7 @@ def logout():
     return render_template('index.html')
 
 """
-2. Board APIs - 게시판 CRUD
+2. Board APIs
 """
 
 @app.route('/board')
@@ -137,7 +136,7 @@ def update(uid):
         return render_template('update.html', index=uid, row=row)
 
 """
-3. BoardArticle APIs - 게시판 글 CRUD
+3. BoardArticle APIs 
 """
 
 @app.route('/board/<int:board_id>')
@@ -196,12 +195,6 @@ def delete_article(board_id, board_article_id):
 """
 4. Dashboard APIs
 """
-
-import dbModule
-from flask import Flask, jsonify, redirect, url_for, render_template, request, session
-
-app = Flask(__name__)
-
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
     db_class = dbModule.Database()
