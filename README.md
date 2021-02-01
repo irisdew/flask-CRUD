@@ -336,7 +336,7 @@ def logout():
 - register : fullname, email, password를 입력받아 회원가입합니다. 회원정보는 db의 user테이블에 저장됩니다. 비밀번호는 hash로 저장됩니다.
 - logout: session값을 바꿔 로그아웃합니다. 인덱스 화면으로 되돌아갑니다.
 
-#####2. Board APIs
+##### 2. Board APIs
 ```
 @app.route('/board')
 def boardhome():
@@ -417,7 +417,7 @@ def update(uid):
 - delete: 화면에 표시된 게시판 번호인 uid를 입력받아 게시판을 삭제합니다. uid 번호는 db에 저장된 게시판 정보의 id와 다르기 때문에 sql문으로 해당 게시판의 id를 찾아 게시판을 db에서 삭제합니다.  
 - update: 화면에 표시된 게시판 번호인 uid를 입력받아 게시판을 수정합니다. uid 번호는 db에 저장된 게시판 정보의 id와 다르기 때문에 sql문으로 해당 게시판의 id를 찾아 게시판 정보를 db에서 수정합니다. 화면에서 수정할 name, content 정보를 받아 db에 업데이트합니다. 
 
-#####3. Boardarticle APIs
+##### 3. Boardarticle APIs
 ```
 
 @app.route('/board/<int:board_id>')
@@ -479,7 +479,7 @@ def delete_article(board_id, board_article_id):
 - update_article: 주소로 입력받은 board_id, board_article_id에 해당하는 게시글을 수정합니다. 수정할 title, content, new_board_id(위치를 변경할 게시판)을 입력받아 db의 boardarticle 테이블에서 해당 게시글 정보를 수정합니다. 수정이 완료되면 '수정이 완료되었습니다'를 출력합니다.
 - delete_article: 주소로 입력받은 board_id, board_article_id에 해당하는 게시글을 삭제합니다. db의 boardarticle 테이블에서 해당 게시글 정보를 삭제합니다. 삭제가 완료되면 '삭제가 완료되었습니다'를 출력합니다.
 
-#####4. Dashboard API
+##### 4. Dashboard API
 ```
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
