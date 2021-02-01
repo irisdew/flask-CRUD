@@ -18,7 +18,6 @@ def home():
         return render_template('index.html')
 
 
-# login 주소에서 POST 방식의 요청을 받았을 때
 @app.route('/login', methods = ['GET', 'POST'])  
 def login():  
     if request.method == 'POST':
@@ -35,8 +34,7 @@ def login():
             else:
                 return '비밀번호가 틀립니다.'
         else: 
-            return '아이디가 없습니다'
-        
+            return '아이디가 없습니다'       
     else:
         return render_template('login.html')
 
