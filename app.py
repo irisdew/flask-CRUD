@@ -1,67 +1,14 @@
-from flask import Flask, jsonify, redirect, url_for, render_template, request, session
-import secrets
-from werkzeug.security import generate_password_hash, check_password_hash
-
 import dbModule
+from flask import Flask, jsonify, redirect, url_for, render_template, request, session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-@app.route('/welcome', methods=['GET', 'POST'])
-def welcome():
-    if request.method == 'POST':
-        value = request.form['input']
-        return f"{value}님 환영합니다."
-    
-    if request.method == 'GET':
-        return render_template('welcome.html')
+app.config.from_mapping(SECRET_KEY='dev')
 
-@app.route('/post/<int:post_id>')
-def show_post(post_id):
-    return 'Post %s' % post_id
-    
-@app.route('/path/<path:subpath>')
-def show_subpath(subpath):
-    return 'Subpath %s' % subpath
-
-@app.route('/people')
-def json():
-    people = [{'name':'Elice', 'birth-year':2015}, 
-              {'name':'Dodo', 'birth-year':2016},
-              {'name':'Queen', 'birth-year':2017}]
-    return jsonify(people)
-
-# 관리자 페이지로 이동
-@app.route('/admin')
-def admin():
-    return "<h1>This is Admin Page</h1>"
-
-
-# 학생 페이지로 이동
-@app.route('/student')
-def student():
-    return "This is Student Page"
-
-
-# redirect() 함수는 페이지에 다시 연결한다는 뜻으로 마치 페이지를 새로고침 한 것과 같은 동작합니다.
-@app.route('/user/<name>')
-def user(name):
-    # 전달 받은 name이 'admin' 이라면?
-    if name == 'admin':
-        return redirect(url_for('admin'))
-
-    # 전달 받은 name이 'student' 라면?
-    elif name == 'student':
-        return redirect(url_for('student'))
-
-    else:        
-        return 'User %s' % name
-
-
-## <로그인>
-app.secret_key = 'super secret key'
-app.config['SESSION_TYPE'] = 'filesystem'
-userinfo = {'Elice': '1q2w3e4r!!'}
-
+"""
+1. User APIs : 유저 SignUp / Login / Logout
+"""
 
 @app.route('/')
 def home():
@@ -75,40 +22,48 @@ def home():
 @app.route('/login', methods = ['GET', 'POST'])  
 def login():  
     if request.method == 'POST':
-        id = request.form['id']  
-        password = request.form['pwd'] 
-        try:
-            if (id in userinfo):
-                if userinfo[id] == password:
-                    session['logged_in'] = True
-                    return render_template('loggedin.html')
-                else:
-                    return '비밀번호가 틀립니다.'
-            return '아이디가 없습니다.'
-        except:
-            return "Don't login"
+        email = request.form['email']  
+        password = request.form['password']
+        db_class = dbModule.Database()
+        sql = f"SELECT * FROM user WHERE email='{email}'"
+        row = db_class.executeOne(sql)
+        print(row)
+        if row is not None:
+            if check_password_hash(row['password'], password):
+                session['logged_in'] = True
+                return render_template('loggedin.html')
+            else:
+                return '비밀번호가 틀립니다.'
+        else: 
+            return '아이디가 없습니다'
+        
     else:
         return render_template('login.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        userinfo[request.form['username']] = request.form['password']
-        print(userinfo)
+        fullname = request.form['fullname']
+        email = request.form['email']
+        hashed_password = generate_password_hash(request.form['password'])
+        db_class = dbModule.Database()
+        sql = f"INSERT INTO user (fullname, email,  password) VALUES ('{fullname}', '{email}', '{hashed_password}')"
+        db_class.execute(sql)
+        db_class.commit()
         return redirect(url_for('login'))
     else:
         return render_template('register.html')
+
 
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
     return render_template('index.html')
 
-## <게시판>
-
-board = []
+"""
+2. Board APIs - 게시판 CRUD
+"""
 
 @app.route('/board')
 def boardhome():
@@ -136,10 +91,10 @@ def add():
     if request.method == 'POST':
         try:
             name = request.form['name']
-            context = request.form['context']
+            content = request.form['content']
             db_class = dbModule.Database()
-            print(name, context)
-            sql = f"INSERT INTO board (name, content) VALUES ('{name}', '{context}')"
+            print(name, content)
+            sql = f"INSERT INTO board (name, content) VALUES ('{name}', '{content}')"
             db_class.execute(sql)
             db_class.commit()
         except:
@@ -147,13 +102,18 @@ def add():
         finally:
             return redirect(url_for('boardhome'))
     else:
-        return render_template('board.html', rows = board)
+        db_class = dbModule.Database()
+        sql = "SELECT * FROM board"
+        rows = db_class.executeAll(sql)
+        return render_template('add.html', rows = rows)
 
 
 @app.route('/delete/<int:uid>')
 def delete(uid):
     db_class = dbModule.Database()
-    sql = f"DELETE FROM Board WHERE id='{uid}'"
+    rows = db_class.executeAll("SELECT * FROM board")
+    row_id = rows[uid-1]['id']
+    sql = f"DELETE FROM Board WHERE id='{row_id}'"
     db_class.execute(sql)
     db_class.commit()
     return redirect(url_for('boardhome'))
@@ -163,26 +123,93 @@ def delete(uid):
 def update(uid):
     if request.method =='POST':
         name = request.form['name']
-        context = request.form['context']
+        content = request.form['content']
         db_class = dbModule.Database()
-        sql = f"UPDATE board Set name='{name}', content='{context}' WHERE id='{uid}'"
+        rows = db_class.executeAll("SELECT * FROM board")
+        row_id = rows[uid-1]['id']
+        sql = f"UPDATE board Set name='{name}', content='{content}' WHERE id='{row_id}'"
         db_class.execute(sql)
         db_class.commit()
         return redirect(url_for('boardhome'))
     else:
         db_class = dbModule.Database()
-        sql = f"SELECT * FROM board WHERE id ='{uid}'"
-        rows = db_class.executeOne(sql)
-        return render_template('update.html', index=uid, rows=rows)
+        sql = "SELECT * FROM board"
+        rows = db_class.executeAll(sql)
+        row = rows[uid-1]
+        return render_template('update.html', index=uid, row=row)
 
+"""
+3. BoardArticle APIs - 게시판 글 CRUD
+"""
 
-@app.errorhandler(404)
-#2번을 해보세요!
-def page_not_found(error):
-    #3번을 해보세요!
-    app.logger.error(error)
-    #4번을 해보세요!
-    return render_template('page_not_found.html')
+@app.route('/board/<int:board_id>')
+def show_board(board_id):
+    db_class = dbModule.Database()
+    sql = "SELECT id, title, content FROM `boardarticle` WHERE `board_id`=%s"
+    result = db_class.executeAll(sql, (board_id,))
+    board_name = db_class.executeOne(f"SELECT name FROM board WHERE id={board_id}")['name']
+    return render_template('boardarticle.html', board_name=board_name, result=result)
+
+@app.route('/board/<int:board_id>/<int:board_article_id>')
+def show_article(board_id, board_article_id):
+        db_class = dbModule.Database()
+        sql = f"SELECT * FROM `boardarticle` WHERE (`board_id`={board_id}) && (`id`={board_article_id})"
+        result = db_class.executeOne(sql)
+        return render_template('article.html', result=result)
+
+@app.route('/post', methods = ['GET', 'POST'])
+def post_article():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        board_id = request.form['board_id']
+        print(title, content, board_id)
+        db_class = dbModule.Database()
+        sql = f"INSERT INTO boardarticle (`title`, `content`, `board_id`) VALUES ('{title}', '{content}', '{board_id}')"
+        db_class.execute(sql)
+        db_class.commit()
+        return "게시글 추가가 완료되었습니다"
+    else:
+        return render_template('post.html')
+
+@app.route('/board/<int:board_id>/<int:board_article_id>/update', methods = ['GET', 'POST'])        
+def update_article(board_id, board_article_id):
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        new_board_id = request.form['board_id']
+        print(title, content, new_board_id)
+        db_class = dbModule.Database()
+        sql = "UPDATE `boardArticle` SET title = %s, content = %s, board_id = %s WHERE `id` = %s"
+        db_class.execute(sql, (title, content, new_board_id, board_article_id))
+        db_class.commit()
+        return '수정이 완료되었습니다'
+    else:
+        return render_template('update_article.html', board_id = board_id, board_article_id = board_article_id)
+        
+@app.route('/board/<int:board_id>/<int:board_article_id>/delete')        
+def delete_article(board_id, board_article_id):
+    db_class = dbModule.Database()
+    sql = "DELETE FROM `boardArticle` WHERE `id` = %s"
+    db_class.execute(sql, (board_article_id))
+    db_class.commit()
+    return '삭제가 완료되었습니다'
+
+"""
+4. Dashboard APIs
+"""
+
+import dbModule
+from flask import Flask, jsonify, redirect, url_for, render_template, request, session
+
+app = Flask(__name__)
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    db_class = dbModule.Database()
+    sql = "SELECT * FROM boardarticle GROUP BY board_id ORDER BY create_date DESC"
+    rows = db_class.executeAll(sql)
+    return render_template('dashboard.html', rows = rows)
 
 
 if __name__ == '__main__':
